@@ -1,0 +1,15 @@
+/target
+
+# Debian package artifacts
+/debian/usr/
+
+# Windows installer artifacts
+*.msi
+*.exe
+*.wixobj
+*.wixpdb
+
+# Build output
+gbulk-*.deb
+gbulk-*.msi
+gbulk-*-setup.exe

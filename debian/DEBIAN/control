@@ -1,0 +1,15 @@
+Package: gbulk
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: git
+Maintainer: Jo Jo <joeystdio@gmail.com>
+Description: Fast, cross-platform CLI tool for bulk git operations
+ gbulk is a command-line tool for running git operations across
+ multiple repositories in parallel. Features include:
+  - Parallel execution for maximum speed
+  - Real-time progress indicators
+  - Smart pull-all with auto-stash/pop
+  - Custom command execution across all repos
+  - Cross-platform support
