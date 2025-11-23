@@ -5,7 +5,7 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use tokio::task::JoinSet;
 use walkdir::WalkDir;
 
@@ -257,6 +257,7 @@ async fn update_submodules(repo: &Path, _repo_name: &str) -> RepoStatus {
 
 async fn pull_all_repos(repos: Vec<PathBuf>, yes: bool, dry_run: bool) -> Result<()> {
     let multi = Arc::new(MultiProgress::new());
+    let input_lock = Arc::new(Mutex::new(()));
     let mut tasks = JoinSet::new();
 
     if dry_run {
@@ -274,6 +275,7 @@ async fn pull_all_repos(repos: Vec<PathBuf>, yes: bool, dry_run: bool) -> Result
 
     for repo in repos {
         let multi_clone = multi.clone();
+        let input_lock_clone = input_lock.clone();
 
         tasks.spawn(async move {
             let pb = multi_clone.add(ProgressBar::new_spinner());
@@ -291,7 +293,7 @@ async fn pull_all_repos(repos: Vec<PathBuf>, yes: bool, dry_run: bool) -> Result
 
             pb.set_message(format!("{}: Starting...", repo_name));
 
-            let result = pull_repo(&repo, &pb, &repo_name, yes, dry_run).await;
+            let result = pull_repo(&repo, &pb, &multi_clone, &input_lock_clone, &repo_name, yes, dry_run).await;
 
             pb.finish_and_clear();
 
@@ -312,6 +314,8 @@ async fn pull_all_repos(repos: Vec<PathBuf>, yes: bool, dry_run: bool) -> Result
 async fn pull_repo(
     repo: &Path,
     pb: &ProgressBar,
+    multi: &MultiProgress,
+    input_lock: &Arc<Mutex<()>>,
     repo_name: &str,
     yes: bool,
     dry_run: bool,
@@ -386,10 +390,14 @@ async fn pull_repo(
                 repo_name, branch
             ));
         } else if yes
-            || prompt_user(&format!(
-                "Delete branch '{}' in {} (upstream gone)?",
-                branch, repo_name
-            ))
+            || prompt_user(
+                &format!(
+                    "Delete branch '{}' in {} (upstream gone)?",
+                    branch, repo_name
+                ),
+                multi,
+                input_lock,
+            )
         {
             pb.set_message(format!("{}: Deleting branch {}...", repo_name, branch));
             let _ = run_git(&["branch", "-D", branch]);
@@ -520,14 +528,18 @@ fn find_fallback_branch(
     None
 }
 
-fn prompt_user(message: &str) -> bool {
-    print!("{} [y/N]: ", message);
-    io::stdout().flush().unwrap();
+fn prompt_user(message: &str, multi: &MultiProgress, input_lock: &Arc<Mutex<()>>) -> bool {
+    let _lock = input_lock.lock().unwrap();
+    
+    multi.suspend(|| {
+        print!("{} [y/N]: ", message);
+        io::stdout().flush().unwrap();
 
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
 
-    matches!(input.trim().to_lowercase().as_str(), "y" | "yes")
+        matches!(input.trim().to_lowercase().as_str(), "y" | "yes")
+    })
 }
 
 async fn exec_all_repos(repos: Vec<PathBuf>, args: Vec<String>) -> Result<()> {
