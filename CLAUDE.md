@@ -51,7 +51,7 @@ cargo clippy
 
 ## Architecture
 
-**Single-file architecture**: The entire application is contained in `src/main.rs` (~550 lines).
+**Single-file architecture**: The entire application is contained in `src/main.rs` (~665 lines).
 
 ### Core Components
 
@@ -190,7 +190,7 @@ The repository includes automated workflows in `.github/workflows/`:
 
 Runs on every push to `main` and all PRs:
 
-- Tests build on Linux, Windows, and macOS
+- Tests build on Linux and Windows
 - Runs `cargo check`, `cargo clippy -- -D warnings`, `cargo fmt --check`
 - Builds installers (Debian package on Ubuntu, Inno Setup on Windows)
 - Artifacts retained for 30 days
@@ -224,16 +224,15 @@ git push origin v0.1.1
 - `build-deb.sh` creates `debian/usr/` directories with `mkdir -p` (not in git)
 - Inno Setup expects binary at `target\release\gbulk.exe` (workflow handles copy)
 
-## Migration from PowerShell Scripts
+## PowerShell Script Migration
 
-This tool replaces the functionality from the `old/` PowerShell scripts:
+The tool was designed to replace PowerShell scripts with the following feature mapping:
 
 - **pull-all.ps1** → `gbulk pull-all` (with `-y` and `--dry-run` flags)
 - **list-submodule-repos.ps1** → `gbulk submodule-list`
 - **update-submodule-repos.ps1** → `gbulk submodule-update`
-- **init.ps1** → Not replaced (repo initialization is one-time setup)
 
-All PowerShell script features are now implemented:
+All features from the original PowerShell scripts are implemented:
 
 - ✅ Fetch with prune
 - ✅ Gone branch detection and cleanup

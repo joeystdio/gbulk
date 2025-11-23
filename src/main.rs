@@ -293,7 +293,16 @@ async fn pull_all_repos(repos: Vec<PathBuf>, yes: bool, dry_run: bool) -> Result
 
             pb.set_message(format!("{}: Starting...", repo_name));
 
-            let result = pull_repo(&repo, &pb, &multi_clone, &input_lock_clone, &repo_name, yes, dry_run).await;
+            let result = pull_repo(
+                &repo,
+                &pb,
+                &multi_clone,
+                &input_lock_clone,
+                &repo_name,
+                yes,
+                dry_run,
+            )
+            .await;
 
             pb.finish_and_clear();
 
@@ -530,7 +539,7 @@ fn find_fallback_branch(
 
 fn prompt_user(message: &str, multi: &MultiProgress, input_lock: &Arc<Mutex<()>>) -> bool {
     let _lock = input_lock.lock().unwrap();
-    
+
     multi.suspend(|| {
         print!("{} [y/N]: ", message);
         io::stdout().flush().unwrap();
