@@ -1,6 +1,6 @@
 {
   "name": "gbulk",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Fast bulk git operations across multiple repositories",
   "type": "module",
   "main": "./dist/index",
