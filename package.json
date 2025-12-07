@@ -1,11 +1,11 @@
 {
   "name": "gbulk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fast bulk git operations across multiple repositories",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index",
   "bin": {
-    "gbulk": "./bin/gbulk.js"
+    "gbulk": "./bin/gbulk"
   },
   "files": [
     "dist",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/index.js",
+    "start": "node dist/index",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
