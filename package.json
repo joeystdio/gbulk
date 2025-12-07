@@ -1,0 +1,53 @@
+{
+  "name": "gbulk",
+  "version": "0.1.0",
+  "description": "Fast bulk git operations across multiple repositories",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "gbulk": "./bin/gbulk.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "git",
+    "bulk",
+    "cli",
+    "repository",
+    "parallel",
+    "pull",
+    "submodule"
+  ],
+  "author": "Jo Jo <joeystdio@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeystdio/gbulk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joeystdio/gbulk/issues"
+  },
+  "homepage": "https://github.com/joeystdio/gbulk#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "execa": "^9.5.1",
+    "fast-glob": "^3.3.2",
+    "ora": "^8.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  }
+}
